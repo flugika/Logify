@@ -1,0 +1,89 @@
+.SearchBar {
+    width: 100%;
+}
+
+.SearchBarBox {
+    width: 80%;
+    /* ใช้เปอร์เซ็นต์เพื่อให้เหมาะสมกับหน้าจอทุกขนาด */
+    max-width: 800px;
+    /* จำกัดความกว้างสูงสุด */
+    margin: 1.5rem auto;
+    /* margin ด้านข้างเป็น auto เพื่อให้กลาง และด้านบนล่างเป็น 1.5rem */
+    background-color: var(--main-bg-color);
+    color: var(--main-bg-color);
+    display: flex;
+    border-radius: 5rem;
+    align-items: center;
+    padding: 0.5rem;
+    /* เพิ่ม padding รอบๆ */
+    box-shadow: 10px 6px 8px rgba(1, 27, 10, 0.2), -10px -6px 8px rgba(255, 255, 255, 0.3);
+    transition: box-shadow 0.3s ease;
+}
+
+.SearchBarBox:hover {
+    box-shadow: 10px 6px 12px rgba(1, 27, 10, 0.3), -10px -6px 12px rgba(255, 255, 255, 0.4);
+}
+
+.SearchBarBoxIcon {
+    font-size: 1.5rem;
+    /* ขนาดฟอนต์ไอคอน */
+    padding: .5rem 1rem;
+    /* เพิ่ม padding ด้านซ้ายและขวา */
+    cursor: pointer;
+    color: #384137;
+    flex-shrink: 0;
+    /* ป้องกันการลดขนาด */
+}
+
+.SearchBarBox input {
+    width: 100%;
+    /* ใช้ความกว้างทั้งหมดที่เหลือ */
+    border: 0;
+    outline: 0;
+    padding: 1rem;
+    background-color: var(--main-bg-color);
+}
+
+.SearchBarBox input::placeholder {
+    color: #406661;
+    font-size: 1rem;
+}
+
+/* Responsive สำหรับหน้าจอขนาดเล็ก (มือถือ) */
+@media screen and (max-width: 767px) {
+    .SearchBarBox {
+        width: 90%;
+        /* กว้างขึ้นเล็กน้อยบนมือถือ */
+    }
+
+    .SearchBarBoxIcon {
+        font-size: 1.5rem;
+        padding: .5rem 0;
+        margin: 0 1.5rem;
+    }
+
+    .SearchBarBox input {
+        padding: 1rem;
+    }
+
+    .SearchBarBox input::placeholder {
+        font-size: 1rem;
+    }
+}
+
+/* Responsive สำหรับ iPad และหน้าจอที่กว้างขึ้น */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .SearchBarBox {
+        width: 70%;
+    }
+
+    .SearchBarBoxIcon {
+        font-size: 1.5rem;
+        padding: .5rem 0;
+        margin: 0 1.5rem;
+    }
+
+    .SearchBarBox input::placeholder {
+        font-size: 1.1rem;
+    }
+}

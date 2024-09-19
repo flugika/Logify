@@ -1,0 +1,9 @@
+.confirm-button-class {
+    border-radius: 30px !important;
+    padding: 8px 16px;
+}
+
+.cancel-button-class {
+    border-radius: 30px !important;
+    padding: 8px 16px;
+}

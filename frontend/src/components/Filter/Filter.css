@@ -1,0 +1,63 @@
+.filter-container {
+    padding: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+    width: 160px;
+}
+
+.filter-form {
+    border-radius: 30px;
+    background-color: #8ba896;
+    box-shadow: 2px 4px 4px rgba(1, 27, 10, 0.2), -2px -4px 4px rgba(255, 255, 255, 0.3);
+    transition: box-shadow 0.3s ease;
+}
+
+.filter-form:hover {
+    box-shadow: 2px 4px 6px rgba(1, 27, 10, 0.3), -2px -4px 6px rgba(255, 255, 255, 0.4);
+}
+
+.filter-select, .filter-autocomplete {
+    box-shadow: none;
+    color: #384137 !important;
+}
+
+.filter-select .MuiOutlinedInput-notchedOutline, 
+.filter-autocomplete .MuiOutlinedInput-notchedOutline {
+    border: 0;
+}
+
+.filter-select.Mui-focused .MuiOutlinedInput-notchedOutline,
+.filter-autocomplete.Mui-focused .MuiOutlinedInput-notchedOutline,
+.filter-select:hover .MuiOutlinedInput-notchedOutline,
+.filter-autocomplete:hover .MuiOutlinedInput-notchedOutline {
+    border: 0;
+}
+
+/* Autocomplete option styles */
+.filter-autocomplete .MuiAutocomplete-option {
+    color: #384137; /* Default text color for options */
+    background-color: #fff; /* Default background color for options */
+}
+
+.filter-autocomplete .MuiAutocomplete-option:hover {
+    background-color: #fff; /* Keep background color unchanged on hover */
+}
+
+/* Optional: Styles for selected option */
+.filter-autocomplete .MuiAutocomplete-option.Mui-focused {
+    background-color: #fff; /* Keep background color unchanged when focused */
+}
+
+/* Label styles */
+.filter-label {
+    font-size: 1rem;
+    color: #384137 !important;
+}
+
+.filter-label.Mui-focused {
+    color: #384137 !important;
+}
+
+.MuiAutocomplete-popupIndicator {
+    color: #384137 !important; /* Style dropdown indicator */
+}
