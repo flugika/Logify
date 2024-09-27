@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, CircularProgress, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { Box, CircularProgress, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../stores/store";
 import { GetFollowerByUID, UnfollowUser } from "../../services/HttpClientService";
@@ -153,30 +153,32 @@ function Following() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {following.map((follower) => (
+                                            {following.map((following) => (
                                                 <TableRow
-                                                    key={follower.ID}
+                                                    key={following.ID}
                                                     sx={{
                                                         '&:nth-of-type(odd)': { backgroundColor: '#F9F9F9' },
                                                         '&:hover': { backgroundColor: '#F1FFF9' }
                                                     }}
                                                 >
                                                     <TableCell sx={{ padding: { xs: '0.5rem', md: '0.75rem' }, fontSize: { xs: '0.8rem', md: '1rem' }, color: '#555' }}>
-                                                        {follower.User?.Username}
+                                                        {following.User?.Username}
                                                     </TableCell>
                                                     <TableCell sx={{ padding: { xs: '0.5rem', md: '0.75rem' }, fontSize: { xs: '0.8rem', md: '1rem' }, color: '#555' }}>
-                                                        {follower.User?.Firstname} {follower.User?.Lastname}
+                                                        {following.User?.Firstname} {following.User?.Lastname}
                                                     </TableCell>
                                                     <TableCell sx={{ padding: { xs: '0.5rem', md: '0.75rem' }, fontSize: { xs: '0.8rem', md: '1rem' }, color: '#555' }}>
-                                                        {follower.User?.Email}
+                                                        {following.User?.Email}
                                                     </TableCell>
                                                     <TableCell sx={{ padding: { xs: '0.5rem', md: '0.75rem' }, fontSize: { xs: '0.8rem', md: '1rem' }, color: '#555' }}>
-                                                        {follower.User?.Province}
+                                                        {following.User?.Province}
                                                     </TableCell>
                                                     <TableCell sx={{ padding: { xs: '0.5rem', md: '0.75rem' }, fontSize: { xs: '0.8rem', md: '1rem' }, color: '#555' }}>
-                                                        <IconButton onClick={() => handleFollow(follower)}>
-                                                            <HeartBrokenIcon />
-                                                        </IconButton>
+                                                        <Tooltip title="unfollow">
+                                                            <IconButton onClick={() => handleFollow(following)}>
+                                                                <HeartBrokenIcon />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </TableCell>
                                                 </TableRow>
                                             ))}

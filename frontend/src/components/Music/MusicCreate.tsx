@@ -8,6 +8,8 @@ import MoodFilter from "../Filter/MoodFilter";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useNavigate } from "react-router-dom";
 
 declare global {
     interface Window {
@@ -33,6 +35,7 @@ function MusicCreate() {
     const uid = localStorage.getItem("uid") || "";
     const playerRef = useRef<YT.Player | null>(null);
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
         let data = {
@@ -209,16 +212,52 @@ function MusicCreate() {
                 </Alert>
             </Snackbar>
             <Box sx={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-                <Typography
-                    variant="h4"
-                    sx={{
-                        color: '#384137', // White text for contrast
-                        fontWeight: 'bold', // Bold font for emphasis
-                        marginBottom: "1rem"
-                    }}
-                >
-                    New Music
-                </Typography>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 2, alignItems: "center", mb: "1rem" }}>
+                    <Tooltip title="Back">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => navigate(`/music`)}
+                            sx={{
+                                borderRadius: '50px',
+                                minWidth: '50px',
+                                minHeight: '50px',
+                                width: '50px', // Initial width, showing only the icon
+                                overflow: 'hidden',
+                                padding: '0.5rem',
+                                textTransform: 'none',
+                                fontWeight: 'bold',
+                                display: 'flex',
+                                justifyContent: 'flex-start', // Aligns content to the left
+                                alignItems: 'center',
+                                backgroundColor: "#457A5A",
+                                transition: 'width 0.3s ease, background-color 0.3s ease', // Smooth transition for width change
+                                '&:hover': {
+                                    backgroundColor: '#366147',
+                                },
+                                '& .button-label': {
+                                    opacity: 0, // Text hidden initially
+                                    transition: 'opacity 0.3s ease', // Fade in transition for text
+                                    marginLeft: '10px',
+                                },
+                                '&:hover .button-label': {
+                                    opacity: 1, // Text becomes visible on hover
+                                },
+                            }}
+                        >
+                            <ArrowBackIosNewIcon sx={{ marginLeft: "4px" }} /> {/* Always visible */}
+                        </Button>
+                    </Tooltip>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            color: '#384137', // White text for contrast
+                            fontWeight: 'bold', // Bold font for emphasis
+                        }}
+                    >
+                        New Music
+                    </Typography>
+                </Box>
 
                 <Paper elevation={3} sx={{ padding: '2rem', backgroundColor: '#fafafa', marginBottom: '2rem', alignItems: "center" }}>
                     <TextField

@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Box, Button, CircularProgress, Grid, styled, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../stores/store';
-import { setMoods, setCategories, setErrorMessage, setSelectedUser } from '../../stores/Slice/searchSlice';
+import { setMoods, setCategories, setErrorMessage, setSelectedUser, clearFilters } from '../../stores/Slice/searchSlice';
 import LogCard from './LogCard';
 import SearchBar from '../SearchPage/SearchBar/SearchBar';
 import ImageSlider from '../ImageSliders/ImageSlider';
-import { ListCategories, ListMoods, SearchLogsByLikedOrSaved } from "../../services/HttpClientService";
+import { ListCategories, ListMoods, SearchLogs } from "../../services/HttpClientService";
 import MoodFilter from "../Filter/MoodFilter";
 import CategoryFilter from "../Filter/CategoryFilter";
 import { Link } from 'react-router-dom';
@@ -42,9 +42,8 @@ const LogSavedButton = styled(Button)({
 
 function LogSaved() {
     const dispatch = useDispatch<AppDispatch>();
-    const { selectedUser, selectedMood, selectedCategory, errorMessage } = useSelector((state: RootState) => state.search.data);
+    const { selectedMood, selectedCategory, errorMessage } = useSelector((state: RootState) => state.search.data);
     const [logs, setLogs] = useState<LogInterface[]>([]);
-    const [originalLogs] = useState<LogInterface[]>(logs);
     const [isEmpty, setIsEmpty] = useState(false);
     const [sortedLogs, setSortedLogs] = useState(logs);
     const [isLike, setIsLike] = useState(false);
@@ -52,7 +51,6 @@ function LogSaved() {
     const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState<string>("");
     const uid = localStorage.getItem("uid")
-    let firstLoad = true;
 
     const fetchData = async () => {
         try {
@@ -73,8 +71,11 @@ function LogSaved() {
     const searchData = async () => {
         try {
             setLoading(true);
-            const res = await SearchLogsByLikedOrSaved({
-                userID: parseInt(uid + "") || 0,
+            const res = await SearchLogs({
+                userID: parseInt(uid + ""),
+                keyword: keyword,
+                moodID: selectedMood,
+                categoryID: selectedCategory,
                 liked: false,
                 saved: true,
             });
@@ -88,6 +89,9 @@ function LogSaved() {
                 setLogs([])
             }
         } catch (error) {
+            setLogs([])
+            setIsEmpty(true);
+            dispatch(setErrorMessage("cannot find log"))
             console.error("Error fetching logs", error);
         } finally {
             setLoading(false);
@@ -103,17 +107,19 @@ function LogSaved() {
     };
 
     useEffect(() => {
-        const applySort = () => {
-            if (isLike && !isSave) return [...logs].sort((a, b) => (b.LikesCount || 0) - (a.LikesCount || 0));
-            if (!isLike && isSave) return [...logs].sort((a, b) => (b.SavesCount || 0) - (a.SavesCount || 0));
-            if (isLike && isSave) return [...logs].sort((a, b) => (b.LikesCount || 0) - (a.LikesCount || 0) || (b.SavesCount || 0) - (a.SavesCount || 0));
-            return logs;
-        };
+        if (logs) {
+            const applySort = () => {
+                if (isLike && !isSave) return [...logs].sort((a, b) => (b.LikesCount || 0) - (a.LikesCount || 0));
+                if (!isLike && isSave) return [...logs].sort((a, b) => (b.SavesCount || 0) - (a.SavesCount || 0));
+                if (isLike && isSave) return [...logs].sort((a, b) => (b.LikesCount || 0) - (a.LikesCount || 0) || (b.SavesCount || 0) - (a.SavesCount || 0));
+                return logs;
+            };
 
-        setSortedLogs(applySort());
+            setSortedLogs(applySort());
+        }
     }, [isLike, isSave, logs]);
 
-    const filteredAndSortedLogs = sortedLogs.filter(log => {
+    const filteredAndSortedLogs = (sortedLogs || []).filter(log => {
         const moodMatches = selectedMood ? log.Mood?.ID === selectedMood : true;
         const categoryMatches = selectedCategory ? log.Category?.ID === selectedCategory : true;
         return moodMatches && categoryMatches;
@@ -122,17 +128,16 @@ function LogSaved() {
     useEffect(() => {
         fetchData();
         dispatch(setSelectedUser(parseInt(uid + "")))
+        dispatch(clearFilters());
     }, []);
 
     useEffect(() => {
         searchData();
-    }, [selectedUser, selectedMood, selectedCategory]);
+    }, [selectedMood, selectedCategory]);
 
     useEffect(() => {
         if (keyword === "") {
-            if (firstLoad) {
-                setLogs(originalLogs)
-            }
+            searchData();
         }
     }, [keyword === ""])
 
@@ -159,7 +164,7 @@ function LogSaved() {
             >
                 <ImageSlider />
             </Box>
-            <SearchBar setLogs={setLogs} keyword={keyword} setKeyword={setKeyword} />
+            <SearchBar searchData={searchData} keyword={keyword} setKeyword={setKeyword} />
             <Grid container spacing={2} sx={{ marginTop: { xs: "-2rem", md: "-1rem" } }}>
                 <Grid item xs={0} sm={0} md={1} lg={3}></Grid>
                 <Grid item xs={12} sm={12} md={10} lg={6}>
@@ -210,32 +215,34 @@ function LogSaved() {
                             </Typography>
                         </Box>
                     ) : (
-                        <Grid container spacing={2} justifyContent="center">
-                            {filteredAndSortedLogs.map(log => (
-                                <Grid
-                                    item
-                                    key={log.ID}
-                                    xs="auto"
-                                    sm="auto"
-                                    md="auto"
-                                    lg="auto"
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        flexBasis: 'auto',
-                                        maxWidth: '345px',
-                                    }}
-                                >
-                                    <Link to={`/log/${log.ID}`} style={{ textDecoration: "none" }}>
-                                        <LogCard log={log} />
-                                    </Link>
-                                </Grid>
-                            ))}
-                        </Grid>
+                        <>
+                            <Grid container spacing={2} justifyContent="center">
+                                {filteredAndSortedLogs.map(log => (
+                                    <Grid
+                                        item
+                                        key={log.ID}
+                                        xs="auto"
+                                        sm="auto"
+                                        md="auto"
+                                        lg="auto"
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            flexBasis: 'auto',
+                                            maxWidth: '345px',
+                                        }}
+                                    >
+                                        <Link to={`/log/${log.ID}`} style={{ textDecoration: "none" }}>
+                                            <LogCard log={log} />
+                                        </Link>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                            <Box sx={{ width: '100%', height: '48px' }} />
+                        </>
                     )}
                 </Box>
             )}
-            <Box sx={{ width: '100%', height: '48px' }} />
         </Layout>
     );
 }

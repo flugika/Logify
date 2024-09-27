@@ -20,18 +20,15 @@ interface SearchLogsParams {
     userID: number | null;  // Adjust type if needed
     keyword?: string;
     moodID?: number | null;
-    categoryID?: number | null
+    categoryID?: number | null;
+    liked?: boolean;
+    saved?: boolean;
 }
 
 interface SearchMusicsParams {
     artist?: string;
     name?: string;
-}
-
-interface SearchLikedOrSavedParams {
-    userID?: number | null;  // Adjust type if needed
-    liked?: boolean;
-    saved?: boolean;
+    moodID?: number | null;
 }
 
 interface FollowerParams {
@@ -211,7 +208,9 @@ async function SearchLogs({
     userID,
     keyword,
     moodID,
-    categoryID
+    categoryID,
+    liked,
+    saved,
 }: SearchLogsParams) {
     // Create query parameters
     const params: string[] = [];
@@ -220,41 +219,8 @@ async function SearchLogs({
     if (keyword) params.push(`keyword=${encodeURIComponent(keyword)}`);
     if (moodID) params.push(`mood_id=${moodID}`);
     if (categoryID) params.push(`category_id=${categoryID}`);
-
-    // Construct the full API URL
-    const url = `${apiUrl}/logs?${params.join("&")}`;
-
-    try {
-        let res = await fetch(url, requestOptionsGet)
-            .then((response) => response.json())
-            .then((res) => {
-                if (res.data) {
-                    return res.data;
-                } else {
-                    return false;
-                }
-            });
-
-        return res;
-    } catch (error) {
-        console.error('Error fetching logs:', error);
-        throw error;
-    }
-
-}
-
-async function SearchLogsByLikedOrSaved({
-    userID,
-    liked,
-    saved
-}: SearchLikedOrSavedParams) {
-    // Create query parameters
-    const params: string[] = [];
-
-    if (userID) params.push(`user_id=${userID}`);
     if (liked) params.push(`liked=${liked}`);
     if (saved) params.push(`saved=${saved}`);
-    console.log(params)
 
     // Construct the full API URL
     const url = `${apiUrl}/logs?${params.join("&")}`;
@@ -264,9 +230,7 @@ async function SearchLogsByLikedOrSaved({
             .then((response) => response.json())
             .then((res) => {
                 if (res.data) {
-                    return res.data;
-                } else {
-                    return false;
+                    return res.data ? res.data : false;
                 }
             });
 
@@ -401,12 +365,14 @@ async function ListMusics() {
 async function SearchMusics({
     artist,
     name,
+    moodID,
 }: SearchMusicsParams) {
     // Create query parameters
     const params: string[] = [];
 
     if (artist) params.push(`artist=${encodeURIComponent(artist)}`);
     if (name) params.push(`name=${encodeURIComponent(name)}`);
+    if (moodID) params.push(`mood_id=${encodeURIComponent(moodID)}`);
 
     // Construct the full API URL
     const url = `${apiUrl}/musics?${params.join("&")}`;
@@ -629,7 +595,6 @@ export {
     GetMostLikeLog,
     GetMostSaveLog,
     SearchLogs,
-    SearchLogsByLikedOrSaved,
     ListLogs,
     ListLogsByUID,
     UpdateLog,

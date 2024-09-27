@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Paper, Typography, TextField, Tooltip, Snackbar, Alert, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { Box, Button, Paper, Typography, TextField, Tooltip, Snackbar, Alert, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, InputAdornment, IconButton } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { UpdateUser } from "../../services/HttpClientService";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,8 @@ import { genders } from "../../constants/Signup";
 import ProvinceFilter from "../Filter/ProvinceFilter";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 function EditProfile() {
     const dispatch = useDispatch<AppDispatch>();
@@ -23,6 +25,8 @@ function EditProfile() {
     const [Province, setProvince] = useState<string>(user.Province + "");
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [shouldNavigate, setShouldNavigate] = useState(false);
     const [message, setAlertMessage] = useState("");
     const navigate = useNavigate();
     const uid = localStorage.getItem('uid')
@@ -49,6 +53,7 @@ function EditProfile() {
                 setAlertMessage("Update profile successfully!");
                 dispatch(setSelectedGender(0));
                 dispatch(setSelectedProvince(0));
+                setShouldNavigate(true);  // ตั้งค่าสถานะเพื่ออนุญาตการนำทาง
             } else {
                 setSuccess(false);
                 setError(true);
@@ -61,6 +66,10 @@ function EditProfile() {
         }
     };
 
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+
     const handleClose = async (
         event?: React.SyntheticEvent | Event,
         reason?: string
@@ -71,8 +80,12 @@ function EditProfile() {
         setSuccess(false);
         setError(false);
 
-        navigate('/profile');  // Navigate to the User Page
-        window.location.reload();
+        // ตรวจสอบว่าสามารถนำทางได้หรือไม่
+        if (shouldNavigate) {
+            setShouldNavigate(false);  // รีเซ็ตสถานะการนำทาง
+            navigate('/profile');  // นำทางไปยังหน้า User
+            window.location.reload();
+        }
     };
 
     return (
@@ -209,6 +222,7 @@ function EditProfile() {
                         variant="outlined"
                         fullWidth
                         value={Password}
+                        type={showPassword ? 'text' : 'password'}
                         onChange={(e) => setPassword(e.target.value)}
                         sx={{
                             marginBottom: '1rem',
@@ -231,6 +245,18 @@ function EditProfile() {
                                     color: '#384137',
                                 },
                             },
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
                         }}
                     />
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: 0, md: 2 } }}>

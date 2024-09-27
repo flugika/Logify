@@ -22,7 +22,9 @@ func CreateLog(c *gin.Context) {
 		return
 	}
 
-	if _, err := govalidator.ValidateStruct(log); err != nil {
+	// Validate log struct
+	isValid, err := govalidator.ValidateStruct(log)
+	if !isValid {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

@@ -45,7 +45,6 @@ function Home() {
   const dispatch = useDispatch<AppDispatch>();
   const { selectedUser, selectedMood, selectedCategory, errorMessage } = useSelector((state: RootState) => state.search.data);
   const [logs, setLogs] = useState<LogInterface[]>([]);
-  const [originalLogs] = useState<LogInterface[]>(logs);
   const [isEmpty, setIsEmpty] = useState(false);
   const [sortedLogs, setSortedLogs] = useState(logs);
   const [isLike, setIsLike] = useState(false);
@@ -84,9 +83,17 @@ function Home() {
       });
 
       if (res) {
+        setIsEmpty(false);
         setLogs(res);
+      } else {
+        setLogs([])
+        setIsEmpty(true);
+        dispatch(setErrorMessage("cannot find log"))
       }
     } catch (error) {
+      setLogs([])
+      setIsEmpty(true);
+      dispatch(setErrorMessage("cannot find log"))
       console.error("Error fetching logs", error);
     } finally {
       setLoading(false);
@@ -121,8 +128,8 @@ function Home() {
 
   useEffect(() => {
     fetchData();
-    dispatch(setSelectedUser(0))
-    dispatch(clearFilters())
+    dispatch(clearFilters());
+    firstLoad = false;
   }, []);
 
   useEffect(() => {
@@ -130,21 +137,12 @@ function Home() {
   }, [selectedUser, selectedMood, selectedCategory]);
 
   useEffect(() => {
-    if (keyword === "" && userLog === "") {
-      if (firstLoad) {
-        setLogs(originalLogs)
+    if (!firstLoad) {
+      if (keyword === "" && userLog === "") {
+        searchData();
       }
     }
   }, [keyword === ""])
-
-  useEffect(() => {
-    if (logs.length === 0) {
-      setIsEmpty(true);
-      dispatch(setErrorMessage("cannot find log"))
-    } else {
-      setIsEmpty(false);
-    }
-  }, [logs.length]);
 
   return (
     <Layout>
@@ -169,7 +167,7 @@ function Home() {
       >
         <ImageSlider />
       </Box>
-      <SearchBar setLogs={setLogs} keyword={keyword} setKeyword={setKeyword} />
+      <SearchBar searchData={searchData} keyword={keyword} setKeyword={setKeyword} />
       <Box
         sx={{
           display: 'flex',

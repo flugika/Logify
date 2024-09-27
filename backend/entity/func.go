@@ -1,8 +1,47 @@
 package entity
 
 import (
+	"errors"
 	"gorm.io/gorm"
 )
+
+// Validate checks if the Follower instance is valid
+func (f Follower) Validate() error {
+	if f.UserID == nil || f.FollowerID == nil {
+		return errors.New("UserID and FollowerID cannot be blank")
+	}
+	if *f.UserID == *f.FollowerID {
+		return errors.New("UserID and FollowerID cannot be the same")
+	}
+	return nil
+}
+
+func IsUniqueUser(username, email string, userID uint) (bool, string) {
+	var existingUser User // No need for entity. since it's in the same package
+
+	// Check for existing username (excluding the current user)
+	if err := DB().Where("username = ? AND id != ?", username, userID).First(&existingUser).Error; err == nil {
+		return false, "Username already exists. Please choose another username."
+	}
+
+	// Check for existing email (excluding the current user)
+	if err := DB().Where("email = ? AND id != ?", email, userID).First(&existingUser).Error; err == nil {
+		return false, "Email already exists. Please choose another email."
+	}
+
+	return true, ""
+}
+
+func IsUniqueMusic(name string, musicID uint) (bool, string) {
+	var existingMusic Music // No need for entity. since it's in the same package
+
+	// Check for existing music (excluding the current music)
+	if err := DB().Where("name = ? AND id != ?", name, musicID).First(&existingMusic).Error; err == nil {
+		return false, "Music already exists. Cannot added!"
+	}
+
+	return true, ""
+}
 
 // UpdateLikesCount คำนวณจำนวนไลค์ของ Log ที่ระบุและอัพเดต LikesCount
 func UpdateLikesCount(db *gorm.DB, logID uint) error {

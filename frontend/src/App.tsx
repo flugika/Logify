@@ -22,7 +22,6 @@ function App() {
   const [token, setToken] = useState('');
   const [role, setRole] = useState<string | null>(null);
 
-
   const isTokenExpired = (token: string) => {
     try {
       // Split the JWT to access the payload (second part of the JWT)

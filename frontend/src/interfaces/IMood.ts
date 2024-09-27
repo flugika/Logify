@@ -1,4 +1,4 @@
 export interface MoodInterface {
-    ID?:        number;
-    Name?:      string;
+    ID?: number;
+    Name?: string;
 }

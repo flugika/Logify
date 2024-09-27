@@ -11,9 +11,17 @@ interface CardLogProps {
 
 const CardLog: React.FC<CardLogProps> = ({ log }) => {
 
-    const truncatedArticle = log.Article && log.Article.length > 72
-        ? `${log.Article.substring(0, 72)}...`
-        : log.Article || 'No article available';
+    const cleanText = (input: string | undefined) => {
+        if (!input) return '';
+        // Replace newline characters with a space and remove specific unwanted special characters (e.g., @, @@)
+        return input.replace(/\\n/g, ' ').replace(/[@~`$*"]/g, '').trim(); // Adjust the regex to include any characters you want to clean
+    };
+
+    const cleanedArticle = cleanText(log.Article);
+
+    const truncatedArticle = cleanedArticle.length > 72
+        ? `${cleanedArticle.substring(0, 72)}...`
+        : cleanedArticle || 'No article available';
 
     const truncatedTitle = log.Title && log.Title.length > 25
         ? `${log.Title.substring(0, 25)}...`

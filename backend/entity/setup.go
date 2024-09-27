@@ -136,12 +136,20 @@ func SetupDatabase() {
 	IDPtr3 := &ID3
 	ID4 := uint(4)
 	IDPtr4 := &ID4
+	ID5 := uint(5)
+	IDPtr5 := &ID5
 	ID6 := uint(6)
 	IDPtr6 := &ID6
+	ID7 := uint(7)
+	IDPtr7 := &ID7
+	ID8 := uint(8)
+	IDPtr8 := &ID8
+	ID11 := uint(11)
+	IDPtr11 := &ID11
 
 	// Create Categories
 	categories := []string{
-		"บทความสั้น", "ระบาย", "เรื่องย่อ", "แรงบันดาลใจ", "ความรู้",
+		"บทความสั้น", "ระบาย", "เรื่องย่อ", "แรงบันดาลใจ", "ความรู้", "นิยาย",
 	}
 
 	for _, category := range categories {
@@ -171,7 +179,7 @@ func SetupDatabase() {
 	db.Model(&Music{}).Create(&music1)
 
 	music2 := Music{
-		Name:       "เเด่เธอเเม่เนื้อหอมผู้ครอบครองโลกทั้งใบเเละใจของผม",
+		Name:       "แด่เธอแม่เนื้อหอมผู้ครอบครองโลกทั้งใบและใจของผม",
 		Artist:     "ชีวรินท์ feat. ห้องคุณตา",
 		ChorusTime: 74,
 		URL:        "https://youtu.be/YWgIw7nSv5g",
@@ -179,6 +187,66 @@ func SetupDatabase() {
 		UserID:     IDPtr2,
 	}
 	db.Model(&Music{}).Create(&music2)
+
+	music3 := Music{
+		Name:       "Love Me Like That",
+		Artist:     "Sam Kim",
+		ChorusTime: 47,
+		URL:        "https://youtu.be/nqDgqusxs3Y",
+		MoodID:     IDPtr8,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music3)
+
+	music4 := Music{
+		Name:       "ใครงามเลิศในปฐพี",
+		Artist:     "Phumin feat. Warin",
+		ChorusTime: 93,
+		URL:        "https://youtu.be/8XP1jFumJSQ",
+		MoodID:     IDPtr11,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music4)
+
+	music5 := Music{
+		Name:       "ฝนตกไหม",
+		Artist:     "Three Man Down",
+		ChorusTime: 56,
+		URL:        "https://youtu.be/m9h12tuUqGo",
+		MoodID:     IDPtr5,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music5)
+
+	music6 := Music{
+		Name:       "กาลครั้งหนึ่ง",
+		Artist:     "STAMP Ft. Palmy อีฟ ปานเจริญ",
+		ChorusTime: 82,
+		URL:        "https://youtu.be/xbZyjScHnAw",
+		MoodID:     IDPtr11,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music6)
+
+	music7 := Music{
+		Name:       "Chocolate",
+		Artist:     "PLASUI PLASUI",
+		ChorusTime: 38,
+		URL:        "https://youtu.be/EeH5EewCF8A",
+		MoodID:     IDPtr4,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music7)
+
+	music8 := Music{
+		Name:       "หล่นหายระหว่างทาง",
+		Artist:     "Phumin",
+		ChorusTime: 62,
+		URL:        "https://youtu.be/LvrM4EmXVVU",
+		MoodID:     IDPtr2,
+		UserID:     IDPtr1,
+	}
+	db.Model(&Music{}).Create(&music8)
 
 	password1, _ := bcrypt.GenerateFromPassword([]byte("111"), 14)
 	user1 := User{
@@ -270,160 +338,108 @@ func SetupDatabase() {
 
 	// Create Logs
 	log1 := Log{
-		Title:      "แด่เธอแม่เนื้อหอมผู้ครอบครองโลกทั้งใบและใจของผม",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "โอ้เจ้าดวงความรักแสนงามความฤทัยโอ้เจ้ายอดดวงใจพี่ตามจะใฝ่ฝัน\nมีเจ้าความรักนี้งดงามดั่งแสงตะวัน\nความงดงามวันนั้นผลัดงามดังสายธารา\n\nโอ้เจ้ายอดดวงใจ แม้โดนใครทำร้ายมา\nโอ้แม่แก้วดวงตาโชคชะตาได้ชี้นำ\nมาได้พบยอดชาย ใจละลายที่เธอทำ\nมีหญิงงามคนนั้น คนเดียว คนเดิมในดวงใจ\nวอนสายธารากว้างใหญ่..\n\nพัดดวงฤทัยของเธอมาให้ฉัน\nจะรักเธอ..ทั้งคืนวัน\nแม้ตัวฉันต้องจากไป\n\nใบหน้าช่างดูอ่อนหวาน\nยิ้มเธอช่างดูสดใส\nเห็นทีอยากจะจากโลกไป\nเพราะใจฉัน..มันละลาย\n\nโอ้แม่ยอดกานดา มีแววตาช่างสดใส\nอยากจะฝากดวงใจ..ดวงนี้ให้กับจันทร์\nโอ้แม่ยอดเนื้อหอมโปรดวิงวอนให้มองจันทร์\nมอบดวงใจของฉัน ให้แม่ยอดกานดา\n\nโอ้เจ้ายอดดวงใจ แม้โดนใครทำร้ายมา\nโอ้แม่แก้วดวงตาโชคชะตาได้ชี้นำ\nมาได้พบยอดชาย ใจละลายที่เธอทำ\nมีหญิงงามคนนั้น คนเดียว คนเดิมในดวงใจ\n\nวอนสายธารากว้างใหญ่..\nพัดดวงฤทัยของเธอมาให้ฉัน\nจะรักเธอ..ทั้งคืนวัน\nแม้ตัวฉันต้องจากไป\nใบหน้าช่างดูอ่อนหวาน\nยิ้มเธอช่างดูสดใส\nเห็นทีอยากจะจากโลกไป\nเพราะใจฉัน..มันละลาย\n\nวอนสายธารากว้างใหญ่..\nพัดดวงฤทัยของเธอมาให้ฉัน\nจะรักเธอ..ทั้งคืนวัน\nแม้ตัวฉันต้องจากไป\n\nใบหน้าช่างดูอ่อนหวาน\nยิ้มเธอช่างดูสดใส\nเห็นทีอยากจะจากโลกไป\nเพราะใจฉัน..มันละลาย",
-		LikesCount: 2,
-		SavesCount: 2,
+		Title:      "เพลิงนภา",
+		Cover:      "https://t3.ftcdn.net/jpg/04/50/47/14/360_F_450471489_Yxrl3LliD2CzMtNDFvMPTvnxrSXZ08Qh.jpg",
+		Article:    "@หยดน้ำฝนที่ตกลงมาอย่างไม่ขาดสาย ,@\n@เมฆครึ้มก้อนใหญ่ที่เริ่มตั้งเค้ามาแต่ไกล@\n```ผู้คนมากมายต่างวิ่งกรูกันเข้าร่ม สภาพแออัดจน$หดหู่ใจ$```\n\nแต่น่าแปลกที่ฉันกลับชอบท้องฟ้าสีหม่นกับเมฆเทาเข้มเหล่านี้มากกว่าฟ้าใสสีน้ำทะเลในยามฤดูร้อนซะอีก,\nฉันยังคงเดินเล่นเป็นเพื่อนหมู่เมฆที่กำลังก่อตัวขึ้นมาใหม่เรื่อยๆ\n\tฟังเสียงสายฝนตกกระทบลงสู่พื้น\nกลบเสียงวุ่นวายของผู้คนได้หมดสิ้น ,\nบรรยากาศพาให้หวนนึกถึงวันวาน\nไม่เป็นไรหรอก ถึงจะเจ็บปวดแต่ก็ยังคงสวยงาม\nฉันภาวนาขอพรจากสายฝน ดวงจันทร์ ลมเย็นที่พัดผ่าน ก้อนเมฆและดาว\nรวมไปถึงดวงอาทิตย์ด้วย วอนขอให้คุ้มครองเธอ อย่าให้เธอต้องเจ็บปวด\nให้เธอไปมีความสุขกับท้องฟ้าในแบบที่เธอชอบเถอะนะ\n\"\"`ทุกครั้งเมื่อสายฝนได้ไหลริน\\nเมื่อใดที่ก้อนเมฆสะอื้นร้องไห้ ,\\nฉันจะยังคิดถึงเธอเสมอ ฉันให้สัญญา`\"\"\n\n|\n**`สุดท้ายก็ขอให้ฝน ,`**\n~``โอบกอดเธอไว้ด้วยความอบอุ่นทั้งหมดที่มี :-)``~",
+		LikesCount: 1,
+		SavesCount: 1,
 		UserID:     IDPtr1,
-		CategoryID: IDPtr1,
-		MusicID:    IDPtr2,
-		MoodID:     IDPtr6,
+		CategoryID: IDPtr3,
+		MusicID:    IDPtr5,
+		MoodID:     IDPtr5,
 	}
 	db.Model(&Log{}).Create(&log1)
 
 	log2 := Log{
-		Title:      "หมอกเทา2",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "ความสงบภายใน",
+		Cover:      "https://lofficielthailand.com/wp-content/uploads/2022/02/Nevertheless.jpg",
+		Article:    "ผมชอบอารมณ์เย็นชาของตัวเองหลังจากที่ดูหนังจบที่สุด\nมันทำให้ผมใจเย็นและเปิดกว้างกับโลกใบนี้มากขึ้น\nใจของมสงบและนิ่งมาก ทุกสิ่งที่อยู่รอบข้างดูน่าสนใจไปหมด\n\n**@`ผมได้ยินเสียงลมหายใจของตัวเอง`@**\n**@`นั่นทำให้ผมรู้ตัวว่า ผมยังมีชีวิตอยู่`@**",
 		LikesCount: 1,
 		SavesCount: 1,
-		UserID:     IDPtr2,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		UserID:     IDPtr1,
+		CategoryID: IDPtr3,
+		MusicID:    IDPtr3,
+		MoodID:     IDPtr2,
 	}
 	db.Model(&Log{}).Create(&log2)
 
 	log3 := Log{
-		Title:      "หมอกเทา3",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "วงกลมที่บิดเบี้ยว",
+		Cover:      "https://cdn.stocksnap.io/img-thumbs/960w/people-man_1ONQF7QZ34.jpg",
+		Article:    "ไม่มีใครสมบูรณ์แบบทุกอย่างอยู่แล้ว\nเราทุกคนล้วนมีความพิเศษในตัวเอง\nขอเธอจงอย่าเปรียบเทียบตัวเธอเองกับคนอื่นเลย\nมันคงเหมือนกับการวาดภาพวงกลมเธออาจจะวาดวงกลมไม่กลมอาจจะบิดเบี้ยวไม่สมบูรณ์\n\"\"แต่นั่นก็เป็นตัวตนของเธอ\"\"\n`และมันก็สวยในแบบของเธอ`\nขอเธอโปรดจงอย่ามองข้ามความงดงามของตัวเองเพราะเธอเป็นเธอน่ะมันดีที่สุดแล้วเธอไม่จำเป็นต้องสวยแบบสมบูรณ์แบบแต่จงสวยในแบบที่เธอเป็นเธอนะ\nวันนี้ฉันบอกกับตัวเองหน้ากระจกยิ้มและกอดตัวเองแน่นๆหนึ่งที.... :).",
 		LikesCount: 0,
 		SavesCount: 0,
 		UserID:     IDPtr2,
 		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		MusicID:    IDPtr4,
+		MoodID:     IDPtr11,
 	}
 	db.Model(&Log{}).Create(&log3)
 
 	log4 := Log{
-		Title:      "หมอกเทา4",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "แด่เธอแม่เนื้อหอมผู้เป็นโลกทั้งใบและใจของผม",
+		Cover:      "https://preview.redd.it/o96asqovzgi51.jpg?width=1080&crop=smart&auto=webp&s=949997dd7022512dce7dbb1ed60d02a4032898ae",
+		Article:    "@ต้องรักแค่ไหนถึงอ่อนโยนได้ขนาดนี้@@ต้องสวยแค่ไหนถึงจะโดนจีบด้วยเพลงนี้@`\"\"โอ้เจ้าดวงความรักแสนงามความฤทัย\\nโอ้เจ้ายอดดวงใจที่ตามจากใฝ่ฝัน\\nมีเจ้าความรักนี้งดงามดั่งแสงตะวัน\\nความงดงามวันนั้นผลัดงามดังสายธารา\\n\\nโอ้เจ้ายอดดวงใจแม้โดนใครทำร้ายมา\\nโอ้แม่แก้วดวงตาโชคชะตาได้ชี้นำ\\nมาได้พบยอดชายใจละลายที่เธอทำ\\nมีหญิงงามคนนั้นคนเดียวคนเดิมในดวงใจ\"\"`ผู้เป็นดังดวงดาวในห้วงจักรวาล เธอไม่ใช่เพียงแค่ใครสักคนในโลกนี้\nแต่เป็นประกายแห่งชีวิตที่ทำให้ทุกสิ่งสวยงาม\nราวกับสรรค์สร้างจากฝีมือของเหล่าทวยเทพ\nความงามของเธอไม่ใช่แค่สิ่งที่ปรากฏต่อสายตา\nแต่เป็นพลังที่หลอมรวมเข้าไปในจิตใจผม\n\nโลกทั้งใบดูเต็มไปด้วยความหมาย\nเธอคือแสงแรกของวันใหม่ที่สาดส่องผ่านท้องฟ้าสีคราม\nความร้อนแรงแห่งแสงอาทิตย์ที่แผ่ซ่านไม่เคยทำร้าย\nแต่กลับปลอบประโลมราวกับเธอสามารถควบคุมทุกอณูของเวลา\nเฝ้ามองเธออย่างไม่รู้เบื่อ แม้เวลาจะล่วงเลย\nเธอก็ยังคงงดงามในดวงตาของผมเสมอแม้เธอจะเคยผ่านเรื่องราวที่แหลกสลาย\nหรือบาดแผลที่ฝังลึกแต่เธอกลับยิ่งสง่างามขึ้น\nดั่งเพชรที่ผ่านการเจียระไนด้วยแรงกดดันจนเป็นสิ่งล้ำค่าที่ข้าไม่อาจละสายตาได้\nชะตากรรมนำพาให้เรามาพบกันสายน้ำของกาลเวลาพัดพาเรามาเจอกัน\nความเย้ายวนในแววตาของเธอสะท้อนแสงสว่างที่หลอมละลายหัวใจ\nรอยยิ้มของเธอคล้ายแสงจันทร์ในค่ำคืนที่สงบงาม\nความละมุนในแววตาและท่วงท่าของเธอทำให้รู้สึกเหมือนต้องมนตร์\nราวกับอยู่ในโลกที่มีเพียงเราสอง\nแม้ว่าโลกภายนอกจะวุ่นวายเพียงใดกลับพบความสงบได้เพียงแค่เฝ้ามองเธอ\n\n**`@แม่เนื้อหอม@`****`@ผู้ที่ไม่เพียงแค่ครอบครองโลกนี้ แต่ยังครองใจผมอย่างสมบูรณ์ไม่มีที่สิ้นสุด.@`**",
 		LikesCount: 0,
 		SavesCount: 0,
-		UserID:     IDPtr3,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		UserID:     IDPtr2,
+		CategoryID: IDPtr1,
+		MusicID:    IDPtr2,
+		MoodID:     IDPtr6,
 	}
 	db.Model(&Log{}).Create(&log4)
 
 	log5 := Log{
-		Title:      "หมอกเทา5",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "หากชีวิตนี้เร็วดั่งความฝัน..",
+		Cover:      "https://ata-realestate.com/wp-content/uploads/2023/07/wallpaperflare.com_wallpaper.jpg",
+		Article:    "`**\"คุณเคยรอคอยอะไรสักอย่างไหม\"**`\n\nรอคอยเวลาที่จะได้ทำอะไรสักอย่าง\nรอคอยเวลาที่จะได้เดินทางไปที่ไหนสักแห่ง\nรอคอยเวลาที่จะได้พบเจอใครสักหลายๆคน\n\nในช่วงชีวิตหนึ่งของคนเรานั่นเรียกได้ว่าทั้งยาวนานและแสนสั้น\nวันคืนที่มีความสุขนั้นดำเนินไปอย่างรวดเร็วเสมอ\nเผลอแค่พริบตาเดียว วันคืนแสนสุขนั้นก็เหลือเพียงแค่ในความทรงจำ\nและทิ้งไว้้เพียงแค่วันเวลาที่แสนยาวนานสำหรับการรอคอย\nเพื่อให้ถึงวันคืนที่จะได้พบกับความสุขนั้นอีกครั้ง\n\nสำหรับทุกๆคน คงมีอาหารสักจาน ขนมสักชิ้น สิ่งของอะไรสักอย่าง\nหรือสถานที่ที่ไหนสักแห่ง\nที่เมื่อไหร่ที่ได้กิน ได้สัมผัส\nหรือได้ไปยืนนิ่งๆอยู่ตรงจุดนั้นแล้วหลับตา\nชีวิตก็จะเหมือนได้ย้อนกลับไป ณ วันที่ความทรงจำนั้นได้เกิดขึ้นและบันทึกไว้\n\n**`\"เคยไหมที่คุณไปนั่งถอนหายใจอยู่คนเดียวที่หน้าหม้อสุกี้และจานเป็ดย่าง Mk\"`**\n\nมีสักกี่ครั้งที่คุณเห็นรายชื่อบานาน่าสปริทในเล่มเมนูของไอติมสเว่นเซ่น\nแล้วคุณจะหวนคิดถึงใครสักคนที่ไม่เคยสั่งเมนูอื่นเลยนอกจากเมนูนี้\nวันคืนที่แสนลำบาก\nวันคืนที่ต้องดิ้นรน\nวันคืนที่ต้องพยายาม\nวันคืนที่ต้องร้องไห้\nวันคืนที่ล่วงผ่านไปแล้วพร้อมกับคนหลายคนในความทรงจำ\nเหลือแค่วันคืนที่ยังคงลำบาก ยังคงต้องดิ้นรน ยังคงต้องพยายามอยู่เหมือนเคย\nพร้อมกับความโดดเดี่ยวกับระยะทางที่แสนยาวไกล\nและระยะเวลาอีกยาวนานที่ยังต้องก้าวเดินและรอคอยต่อไป\n\nกลางฤดูกาลที่แสนร้อนอบอ้าวและท่ามกลางโรคระบาดที่น่าหวาดหวั่น\nคิดถึงเหลือเกินครอบครัวที่รักของฉัน ยังรอคอยอยู่ทุกลมหายใจ\nว่าเมื่อไหร่จะถึงกาลแตกดับและได้พบเจอหลายคนที่รัก\nที่ได้ล่วงหน้าจากไปก่อนเสียที\n\"\"`เธออยู่ตรงนั้นสบายดีไหม..\\nฉันอยู่ตรงนี้เป็นเหมือนเดิมคิดถึงเธอทุกวัน`\"\"\n\nหากชีวิตนี้เร็วดังความฝัน.. กาลครั้งหนึ่ง\n**`สักวันเราคงได้พบกัน`**",
 		LikesCount: 0,
 		SavesCount: 0,
 		UserID:     IDPtr3,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		CategoryID: IDPtr3,
+		MusicID:    IDPtr6,
+		MoodID:     IDPtr11,
 	}
 	db.Model(&Log{}).Create(&log5)
 
 	log6 := Log{
-		Title:      "หมอกเทา6",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "ปักเป้า",
+		Cover:      "https://ipdefenseforum.com/wp-content/uploads/2023/08/coral.jpg",
+		Article:    "`\"\"ปลาปักเป้าพองตัวได้ไม่เกิน 3 ครั้งในชีวิต\\nแต่มนุษย์กลับชอบช่วงเวลาที่ปลาปักเป้าทรมาน\"\"`\nคิดย้อนไปทุกทีก็ใจหายไปเสียทุกครั้ง\nที่ชอบใช้จ่ายความสัมพันธ์ไปกับความสุข\nโดยลืมความรู้สึกของปลาปักเป้าเสมอมา\n`@ปลาปักเป้าของเรา$ตาย$แล้ว@`\n`@ความสัมพันธ์ของเราก็จบลงแล้วเช่นกัน@`",
 		LikesCount: 0,
 		SavesCount: 0,
-		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		UserID:     IDPtr3,
+		CategoryID: IDPtr3,
+		MusicID:    IDPtr7,
+		MoodID:     IDPtr1,
 	}
 	db.Model(&Log{}).Create(&log6)
 
 	log7 := Log{
-		Title:      "หมอกเทา7",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "ความบังเอิญหรือโชคชะตา",
+		Cover:      "https://assets.beartai.com/uploads/2023/02/Untitled-1-3.jpg",
+		Article:    "\"\"ไม่ว่าจะด้วยความบังเอิญหรือโชคชะตา\\nรู้สึกยินดีแบบบริสุทธิ์ใจที่ครั้งหนึ่งเคยได้รู้จักคุณ\\nพรรณาเรื่องราวต่างๆมากมายให้กันและกัน\\nจนมีชั่วขณะหนึ่งที่เผลอคิดไปว่าคุณจะเข้ามาเป็นส่วนหนึ่งในทุกๆวัน\\nโดยที่ไม่หล่นหายตามกาลเวลา\"\"",
 		LikesCount: 0,
 		SavesCount: 0,
 		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
+		CategoryID: IDPtr3,
 		MusicID:    IDPtr1,
 		MoodID:     IDPtr4,
 	}
 	db.Model(&Log{}).Create(&log7)
 
 	log8 := Log{
-		Title:      "หมอกเทา8",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
+		Title:      "ทิ้งบางอย่างไว้",
+		Cover:      "https://meghanharney.wordpress.com/wp-content/uploads/2012/12/hug-couple-sad.jpg?w=629",
+		Article:    "ตัวตนของเรามันชัดเจนจากภาพเมื่อหลายปีก่อน\nเมื่อมองมายังปัจจุบัน เราค้นพบ\n\n\n`**@เราได้ทำตัวเองหล่นหายระหว่างทาง@**`\n\n\nทำไมตอนนี้เราถึงได้ชื่นชมคนคนนั้น\n`~**คนในอดีตที่หน้าตาเหมือนเรา**~`\nทำไมเขาใช้ชีวิตได้มีความสุขดีจัง\nทำไมเขายังยิ้มแบบมีความสุขได้ขนาดนั้น\nทำไมโลกของเขาดูสดใสกว่าใครๆ\n\nทำไม ทำไม\n\nทำไมเราตอนนี้\nถึงยิ้มกว้างแบบนั้นไม่เป็นแล้ว\n\nหรือนี่คือค่าใช้จ่ายระหว่างการเดินทาง\n\nโลกนี้ ไม่มีอะไรได้มาฟรี\nคำนี้ไม่ลวงโลกเลย\n\nการเดินทางมีค่าใช้จ่ายสูง\nจนเราเองก็คาดไม่ถึง\nสิ่งหนึ่งที่เราตัองจ่าย\n`คือ~ตัวเรา~`\nสิ่งที่เราได้รับก็คือตัวเรา\nตัวเราที่มี\nทัศนคติ ความคิด การใช้ชีวิต\nที่อาจจะเปลี่ยนไปมาก\nหรืออาจเปลี่ยนเล็กน้อย\nแต่สุดท้ายสิ่งที่เราต้องจ่าย\nก็คือการเปลี่ยนแปลง\nซึ่งไม่รู้ว่ามันคุ้มไหม\n\n`\"\"ตราบที่เรายังต้องใช้ชีวิต\\nแน่นอน\\nเราต้องจ่ายมันทั้งชีวิต\"\"`",
 		LikesCount: 0,
 		SavesCount: 0,
 		UserID:     IDPtr4,
 		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
+		MusicID:    IDPtr8,
+		MoodID:     IDPtr2,
 	}
 	db.Model(&Log{}).Create(&log8)
-
-	log9 := Log{
-		Title:      "หมอกเทา9",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
-		LikesCount: 0,
-		SavesCount: 0,
-		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
-	}
-	db.Model(&Log{}).Create(&log9)
-
-	log10 := Log{
-		Title:      "หมอกเทา10",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
-		LikesCount: 0,
-		SavesCount: 0,
-		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
-	}
-	db.Model(&Log{}).Create(&log10)
-
-	log11 := Log{
-		Title:      "หมอกเทา11",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
-		LikesCount: 0,
-		SavesCount: 0,
-		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
-	}
-	db.Model(&Log{}).Create(&log11)
-
-	log12 := Log{
-		Title:      "หมอกเทา12",
-		Cover:      "https://img.pikbest.com/ai/illus_our/20230426/837299dbdc8aca46cd756e29fc9d859f.jpg!w700wp",
-		Article:    "test test test",
-		LikesCount: 0,
-		SavesCount: 0,
-		UserID:     IDPtr4,
-		CategoryID: IDPtr2,
-		MusicID:    IDPtr1,
-		MoodID:     IDPtr4,
-	}
-	db.Model(&Log{}).Create(&log12)
 
 	// Create Likes
 	like1 := Like{

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Paper, Typography, TextField, Tooltip, Snackbar, Alert, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
+import { Box, Button, Paper, Typography, TextField, Tooltip, Snackbar, Alert, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, IconButton, InputAdornment } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import { Login, SignUpUser } from "../services/HttpClientService";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import { genders } from "../constants/Signup";
 import ProvinceFilter from "./Filter/ProvinceFilter";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 
 function SignUp() {
     const dispatch = useDispatch<AppDispatch>();
@@ -23,6 +24,8 @@ function SignUp() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState(false);
     const [message, setAlertMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [shouldNavigate, setShouldNavigate] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async () => {
@@ -48,6 +51,7 @@ function SignUp() {
                 setAlertMessage("Signup successfully!");
                 dispatch(setSelectedGender(0));
                 dispatch(setSelectedProvince(0));
+                setShouldNavigate(true);  // ตั้งค่าสถานะเพื่ออนุญาตการนำทาง
             } else {
                 setSuccess(false);
                 setError(true);
@@ -75,11 +79,18 @@ function SignUp() {
             Password: Password,
         };
 
-        const loginRes = await Login(hashedSignInData);
-        if (loginRes.token) {
-            navigate('/home');
-            window.location.reload();
+        // ตรวจสอบว่าสามารถนำทางได้หรือไม่
+        if (shouldNavigate) {
+            const loginRes = await Login(hashedSignInData);
+            if (loginRes.token) {
+                navigate('/home');
+                window.location.reload();
+            }
         }
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -215,6 +226,7 @@ function SignUp() {
                         variant="outlined"
                         fullWidth
                         value={Password}
+                        type={showPassword ? 'text' : 'password'}
                         onChange={(e) => setPassword(e.target.value)}
                         sx={{
                             marginBottom: '1rem',
@@ -237,6 +249,18 @@ function SignUp() {
                                     color: '#384137',
                                 },
                             },
+                        }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
                         }}
                     />
                     <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: 0, md: 2 } }}>

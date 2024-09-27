@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { AddLike, AddSave, GetLikeByLogID, GetLog, UnLike, UnSave, GetSaveByLogID, GetFollowerByUID, FollowUser, UnfollowUser, DeleteLog } from "../../services/HttpClientService";
 import { LogInterface } from "../../interfaces/ILog";
-import { Box, Typography, Avatar, Paper, Divider, IconButton, Slider, Stack, Fade } from '@mui/material';
+import { Box, Typography, Avatar, Paper, Divider, IconButton, Slider, Stack, Fade, Tooltip } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import userLogo from "../../img/user.png";
@@ -19,6 +19,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -26,6 +27,9 @@ import { FollowerInterface } from "../../interfaces/IFollower";
 import Swal from "sweetalert2";
 import "../utils/SweetAlert.css";
 import renderArticleText from "../utils/renderArticleText"
+import { categories } from "../utils/categoryIcons";
+import ShareIcon from '@mui/icons-material/Share';
+import LineSelectorModal from "./LineSelectorModal";
 
 const textStyle = {
     marginBottom: '0rem',
@@ -54,6 +58,7 @@ function LogDetail() {
     const dispatch = useDispatch();
     const params = useParams<{ id: string }>();
     const { volume } = useSelector((state: RootState) => state.volume.data);
+    // const { moods } = useSelector((state: RootState) => state.search.data);
     const [showVolumeControl, setShowVolumeControl] = useState(false);
     const [log, setLog] = useState<LogInterface>();
     const [like, setLike] = useState<LikeInterface[]>([]);
@@ -69,6 +74,7 @@ function LogDetail() {
     const [hasSaved, setHasSaved] = useState(true);
     const [followers, setFollowers] = useState<FollowerInterface[]>([]);
     const [isFollowing, setIsFollowing] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
     const uid = localStorage.getItem("uid") || "";
     const navigate = useNavigate();
 
@@ -239,7 +245,6 @@ function LogDetail() {
             };
             fetchData();
             setFollowerCount(log?.User?.FollowerCount || 0);
-            console.log(log)
         }
     }, [log]);
 
@@ -250,6 +255,16 @@ function LogDetail() {
     useEffect(() => {
         setHasSaved(save.some(item => item.UserID === parseInt(uid) && item.LogID === log?.ID));
     }, [save, log?.ID, uid]);
+
+    // Open the modal to allow user to select a line
+    const handleOpenModal = () => {
+        setOpenModal(true);
+    };
+
+    // Close the modal after selection
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
 
     const handleDelete = async () => {
         // Show confirmation modal
@@ -380,25 +395,6 @@ function LogDetail() {
                         aspectRatio: '21 / 9', // 32 / 6 if pc browser
                     }}
                 >
-                    {/* Title Overlay */}
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            bottom: 0,
-                            left: 0,
-                            width: '100%',
-                            padding: '1rem',
-                            paddingTop: '1rem',
-                            background: 'linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0))',
-                            color: 'white',
-                            textAlign: 'center',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2,
-                        }}
-                    >
-                    </Box>
                 </Box>
 
                 {/* Log Content */}
@@ -407,11 +403,23 @@ function LogDetail() {
                         elevation={3}
                         sx={{
                             padding: '2rem',
-                            paddingRight: '4rem',
                             marginTop: '1rem',
                             position: 'relative', // Ensure Paper is positioned relatively for absolute child positioning
                         }}
                     >
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                position: 'absolute',
+                                top: '1rem',
+                                left: '1rem',
+                            }}
+                        >
+                            <IconButton onClick={() => navigate(`/home`)} sx={{ width: "40px", height: "40px" }}>
+                                <ArrowBackIosNewIcon sx={{ color: "#4D8A65" }} />
+                            </IconButton>
+                        </Box>
                         {/* Like Button and Count in Top-Right Corner */}
                         <Box
                             sx={{
@@ -422,6 +430,11 @@ function LogDetail() {
                                 right: '1rem',
                             }}
                         >
+                            <Tooltip title="Share as image">
+                                <IconButton onClick={handleOpenModal} sx={{ width: "40px", height: "40px" }}>
+                                    <ShareIcon sx={{ color: "#4D8A65" }} />
+                                </IconButton>
+                            </Tooltip>
                             {log?.UserID === parseInt(uid) && (
                                 <IconButton onClick={handleDelete} sx={{ width: "40px", height: "40px" }}>
                                     <DeleteIcon sx={{ color: "#E33560" }} />
@@ -464,27 +477,42 @@ function LogDetail() {
                                 alignItems: { xs: 'flex-start', md: 'center' },
                                 gap: 2,
                                 marginTop: "1.6rem",
-                                marginBottom: "1rem",
                                 padding: { xs: 1, md: 2 }, // Add padding for better spacing
-                                borderBottom: '1px solid #ddd', // Add a border for visual separation
-                                width: "100%"
+                                paddingRight: "2rem",
                             }}
                         >
-                            <Typography
+                            <Box
                                 sx={{
-                                    fontSize: { xs: '1.25rem', md: '1.5rem' },
-                                    fontWeight: 'bold',
-                                    marginBottom: { xs: '1rem', md: 0 },
-                                    flex: 1, // Make sure the title takes available space
-                                    width: "82%",
-                                    overflowWrap: 'break-word',
-                                    whiteSpace: 'normal',
-                                    wordBreak: 'break-word',
-                                    textAlign: 'left',
-                                }}
-                            >
-                                {log?.Title}
-                            </Typography>
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    // maxWidth: '65%'
+                                }}>
+                                <Typography
+                                    sx={{
+                                        fontSize: { xs: '1.25rem', md: '1.5rem' },
+                                        fontWeight: 'bold',
+                                        marginBottom: { xs: '1rem', md: 0 },
+                                        flex: 1, // Make sure the title takes available space
+                                        maxWidth: "100%",
+                                        overflowWrap: 'break-word',
+                                        whiteSpace: 'normal',
+                                        wordBreak: 'break-word',
+                                        textAlign: 'left',
+                                    }}
+                                >
+                                    {log?.Title}
+                                </Typography>
+                                {Object.entries(categories)
+                                    .filter(([category, { ID }]) => ID === log?.CategoryID)  // Filter where ID matches log?.MoodID
+                                    .map(([mood, { ID, Name, Icon }]) => (
+                                        <div key={mood} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                            <Box sx={{ display: "flex", alignItems: 'center', color: "#6C757D", }}>
+                                                {Icon}</Box> {/* Display Icon */}
+                                            < Box sx={{ color: "#6C757D", fontSize: { xs: '0.8rem', md: '1rem' } }}>{Name}</Box> {/* Display Name */}
+                                        </div>
+                                    ))
+                                }
+                            </Box>
 
                             <Box
                                 sx={{
@@ -492,6 +520,7 @@ function LogDetail() {
                                     flexDirection: 'row',
                                     alignItems: { xs: 'flex-start', md: 'center' },
                                     gap: 2,
+                                    minWidth: "30%"
                                 }}
                             >
                                 <Avatar
@@ -542,12 +571,12 @@ function LogDetail() {
                                 </Box>
                             </Box>
                         </Box>
+                        <Divider />
                         <Typography
                             paragraph
                             className="article"
                             sx={{
-                                marginTop: "1rem", // Consistent margin with title
-                                marginBottom: "1rem",
+                                m: "2rem 0",
                                 padding: "0 1rem", // Optional padding
                                 fontSize: { xs: '1rem', md: '1.25rem' },
                                 lineHeight: 1.6,
@@ -561,7 +590,7 @@ function LogDetail() {
                                 <Typography sx={{ ...textStyle, color: "#aaa", fontSize: { xs: '0.8rem', md: '1rem' } }}>
                                     {log?.User?.Username} ✧*:･ﾟ
                                 </Typography>
-                                <Typography sx={{ ...textStyle, marginLeft: '0.4rem', color: "#aaa", fontSize: { xs: '0.8rem', md: '1rem' } }}>
+                                <Typography sx={{ ...textStyle, marginLeft: '0.4rem', color: "#aaa", fontSize: { xs: '0.8rem', md: '1rem' }, whiteSpace: 'nowrap' }}>
                                     {log?.CreatedAt ? formatThaiDate(log.CreatedAt) : 'Date not available'}
                                 </Typography>
                             </Box>
@@ -667,6 +696,13 @@ function LogDetail() {
                     </IconButton>
                 </Box>
             </Box>
+            <LineSelectorModal
+                log={log}
+                openModal={openModal}
+                handleCloseModal={handleCloseModal}
+                followerCount={followerCount}
+                formatThaiDate={formatThaiDate}
+                />
         </Layout>
     );
 }

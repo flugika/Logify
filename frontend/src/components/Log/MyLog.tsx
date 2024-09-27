@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Button, CircularProgress, Grid, styled, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../stores/store';
-import { setMoods, setCategories, setErrorMessage, setSelectedUser } from '../../stores/Slice/searchSlice';
+import { setMoods, setCategories, setErrorMessage, setSelectedUser, clearFilters } from '../../stores/Slice/searchSlice';
 import LogCard from './LogCard';
 import SearchBar from '../SearchPage/SearchBar/SearchBar';
 import ImageSlider from '../ImageSliders/ImageSlider';
@@ -42,9 +42,8 @@ const MyLogButton = styled(Button)({
 
 function MyLog() {
   const dispatch = useDispatch<AppDispatch>();
-  const { selectedUser, selectedMood, selectedCategory, errorMessage } = useSelector((state: RootState) => state.search.data);
+  const { selectedMood, selectedCategory, errorMessage } = useSelector((state: RootState) => state.search.data);
   const [logs, setLogs] = useState<LogInterface[]>([]);
-  const [originalLogs] = useState<LogInterface[]>(logs);
   const [isEmpty, setIsEmpty] = useState(false);
   const [sortedLogs, setSortedLogs] = useState(logs);
   const [isLike, setIsLike] = useState(false);
@@ -52,17 +51,14 @@ function MyLog() {
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState<string>("");
   const uid = localStorage.getItem("uid")
-  let firstLoad = true;
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [logs, moods, categories] = await Promise.all([
-        ListLogs(),
+      const [moods, categories] = await Promise.all([
         ListMoods(),
         ListCategories(),
       ]);
-      if (logs) setLogs(logs);
       if (moods) dispatch(setMoods(moods));
       if (categories) dispatch(setCategories(categories));
     } catch (error) {
@@ -76,11 +72,12 @@ function MyLog() {
     try {
       setLoading(true);
       const res = await SearchLogs({
-        userID: parseInt(uid + "") || 0,
+        userID: parseInt(uid + ""),
         keyword: keyword,
         moodID: selectedMood,
         categoryID: selectedCategory
       });
+      console.log(res)
 
       if (res) {
         setIsEmpty(false);
@@ -91,6 +88,9 @@ function MyLog() {
         setLogs([])
       }
     } catch (error) {
+      setIsEmpty(true);
+      dispatch(setErrorMessage("cannot find log"))
+      setLogs([])
       console.error("Error fetching logs", error);
     } finally {
       setLoading(false);
@@ -117,28 +117,28 @@ function MyLog() {
   }, [isLike, isSave, logs]);
 
   const filteredAndSortedLogs = sortedLogs.filter(log => {
-    const userMatches = selectedUser ? log.User?.ID === selectedUser : true;
     const moodMatches = selectedMood ? log.Mood?.ID === selectedMood : true;
     const categoryMatches = selectedCategory ? log.Category?.ID === selectedCategory : true;
-    return userMatches && moodMatches && categoryMatches;
+    return moodMatches && categoryMatches;
   });
 
   useEffect(() => {
     fetchData();
-    dispatch(setSelectedUser(parseInt(uid + "")))
+    dispatch(clearFilters());
+    // Ensure fetchData only runs on component mount
   }, []);
 
   useEffect(() => {
-    searchData();
-  }, [selectedUser, selectedMood, selectedCategory]);
+    if (selectedMood || selectedCategory) {
+      searchData();  // Only trigger search when filters change
+    }
+  }, [selectedMood, selectedCategory]);
 
   useEffect(() => {
     if (keyword === "") {
-      if (firstLoad) {
-        setLogs(originalLogs)
-      }
+      searchData();  // Avoid re-running searchData unnecessarily
     }
-  }, [keyword === ""])
+  }, [keyword === ""]);
 
   return (
     <Layout>
@@ -163,7 +163,7 @@ function MyLog() {
       >
         <ImageSlider />
       </Box>
-      <SearchBar setLogs={setLogs} keyword={keyword} setKeyword={setKeyword} />
+      <SearchBar searchData={searchData} keyword={keyword} setKeyword={setKeyword} />
       <Grid container spacing={2} sx={{ marginTop: { xs: "-2rem", md: "-1rem" } }}>
         <Grid item xs={0} sm={0} md={1} lg={3}></Grid>
         <Grid item xs={12} sm={12} md={10} lg={6}>

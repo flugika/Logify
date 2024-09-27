@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ListMusics, SearchMusics } from "../../services/HttpClientService";
+import { ListMoods, ListMusics, SearchMusics } from "../../services/HttpClientService";
 import { Box, Button, CircularProgress, Dialog, DialogContent, DialogTitle, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../stores/store";
@@ -14,6 +14,8 @@ import MusicNameSearch from "./MusicNameSearch";
 import MusicArtistSearch from "./MusicArtistSearch";
 import { setErrorMessage } from '../../stores/Slice/searchSlice';
 import React from "react";
+import MoodFilter from "../Filter/MoodFilter";
+import { setMoods, clearFilters } from "../../stores/Slice/searchSlice";
 
 // style
 // search
@@ -30,7 +32,7 @@ function MusicDetail() {
     const dispatch = useDispatch<AppDispatch>();
     const { volume } = useSelector((state: RootState) => state.volume.data);
     const { name, artist } = useSelector((state: RootState) => state.music.data);
-    const { errorMessage } = useSelector((state: RootState) => state.search.data);
+    const { selectedMood, errorMessage } = useSelector((state: RootState) => state.search.data);
     const [musics, setMusics] = useState<MusicInterface[]>([]);
     const [openPreview, setOpenPreview] = useState(false);
     const [videoId, setVideoId] = useState("");
@@ -40,15 +42,17 @@ function MusicDetail() {
     const playerRef = useRef<YT.Player | null>(null);
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
-    const listMusics = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
-            const res = await ListMusics();
-            if (res) {
-                setMusics(res);
-            }
+            const [musics, moods] = await Promise.all([
+                ListMusics(),
+                ListMoods(),
+            ]);
+            if (musics) setMusics(musics);
+            if (moods) dispatch(setMoods(moods));
         } catch (error) {
-            console.error('Failed to fetch musics:', error);
+            console.error("Error fetching data", error);
         } finally {
             setLoading(false);
         }
@@ -60,6 +64,7 @@ function MusicDetail() {
             const res = await SearchMusics({
                 artist: artist,
                 name: name,
+                moodID: selectedMood,
             });
 
             if (res) {
@@ -147,7 +152,12 @@ function MusicDetail() {
     }, [volume]);
 
     useEffect(() => {
-        listMusics();
+        searchData();
+    }, [selectedMood]);
+
+    useEffect(() => {
+        fetchData();
+        clearFilters();
     }, []);
 
     return (
@@ -163,19 +173,30 @@ function MusicDetail() {
                     >
                         List Music
                     </Typography>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2 }}>
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: { xs: "column", md: "row" },
-                                gap: { xs: 0, md: 2 },
+                                flexDirection: { xs: "column", lg: "row" },
+                                gap: { xs: 0, lg: 2 },
                                 mt: "1rem",
-                                justifyContent: 'center',
-                                alignItems: 'center'
+                                justifyContent: { xs: 'flex-start', lg: 'center' }, // Center on larger screens, start on smaller
+                                alignItems: 'flex-start' // Align items to the start
                             }}
                         >
-                            <MusicNameSearch searchData={searchData} />
-                            <MusicArtistSearch searchData={searchData} />
+                            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: 0, md: 2, lg: 2 }, }}>
+                                <MusicNameSearch searchData={searchData} />
+                                <MusicArtistSearch searchData={searchData} />
+                            </Box>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    width: { xs: "100%", md: "320px", lg: "160px" },
+                                    justifyContent: 'flex-start' // Always align MoodFilter to the left
+                                }}
+                            >
+                                <MoodFilter />
+                            </Box>
                         </Box>
 
                         <Link to="/music/create" style={{ textDecoration: 'none' }}>
@@ -239,8 +260,8 @@ function MusicDetail() {
                             {isEmpty
                                 ? (
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, paddingTop: "2rem", color: "#F5FFFC" }}>
-                                        <ErrorOutlineIcon sx={{ fontSize: {xs: 30, md: 40}, filter: 'drop-shadow(6px 2px 8px rgba(0, 0, 0, 0.2))' }} />
-                                        <Typography sx={{ marginTop: "-8px", fontSize: {xs: "30px", md: "40px"}, textShadow: '6px 2px 8px rgba(0, 0, 0, 0.2)' }}>
+                                        <ErrorOutlineIcon sx={{ fontSize: { xs: 30, md: 40 }, filter: 'drop-shadow(6px 2px 8px rgba(0, 0, 0, 0.2))' }} />
+                                        <Typography sx={{ marginTop: "-8px", fontSize: { xs: "30px", md: "40px" }, textShadow: '6px 2px 8px rgba(0, 0, 0, 0.2)' }}>
                                             {errorMessage}
                                         </Typography>
                                     </Box>

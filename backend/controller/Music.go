@@ -36,6 +36,12 @@ func CreateMusic(c *gin.Context) {
 		return
 	}
 
+	// Check for uniqueness of music
+	if unique, errMsg := entity.IsUniqueMusic(music.Name, 0); !unique {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
+		return
+	}
+
 	// สร้าง music
 	cm := entity.Music{
 		Name:       music.Name,
@@ -84,6 +90,7 @@ func ListMusics(c *gin.Context) {
 	// Retrieve query parameters
 	artist := c.Query("artist")
 	name := c.Query("name")
+	mood_id := c.Query("mood_id")
 
 	var musics []entity.Music
 	query := entity.DB().Preload("Log").Preload("Mood").Preload("User")
@@ -94,6 +101,10 @@ func ListMusics(c *gin.Context) {
 
 	if artist != "" {
 		query = query.Where("artist LIKE ?", "%"+artist+"%")
+	}
+
+	if mood_id != "" {
+		query = query.Where("mood_id LIKE ?", mood_id)
 	}
 
 	// Execute the query

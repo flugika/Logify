@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, CardHeader, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../stores/store';
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,6 +11,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { LogInterface } from "../../interfaces/ILog";
 import { GetMostLikeLog, GetMostSaveLog } from "../../services/HttpClientService";
 import LogCard from "../Log/LogCard";
+import ShareIcon from '@mui/icons-material/Share';
+import html2canvas from "html2canvas";
+import { saveAs } from 'file-saver';
 
 function Profile() {
     const { user } = useSelector((state: RootState) => state.search.data);
@@ -30,17 +33,93 @@ function Profile() {
         }
     };
 
+    const formatDateTime = () => {
+        const date = new Date();
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        const ss = String(date.getSeconds()).padStart(2, '0');
+        return `${yyyy}${mm}${dd}-${hh}${min}${ss}`;
+    };
+
+    const handleShareAsImage = () => {
+        const node = document.getElementById('profile-content'); // กำหนด ID ให้กับ Box ที่จะแปลงเป็นรูปภาพ
+
+        html2canvas(node!, {
+            scale: 3, // เพิ่มค่า scale เพื่อตั้งค่า DPI ที่สูงขึ้น
+            useCORS: true, // รองรับการเรียกข้ามโดเมน (CORS)
+            backgroundColor: null, // Set backgroundColor to null for transparency
+        }).then((canvas: HTMLCanvasElement) => {
+            canvas.toBlob((blob) => {
+                if (blob) { // ตรวจสอบว่า blob ไม่เป็น null
+                    saveAs(blob, `${user.Username}-${formatDateTime()}.png`); // เซฟภาพที่มีความละเอียดสูง
+                } else {
+                    console.error('Blob is null');
+                }
+            }, 'image/png');
+        });
+    };
+
     useEffect(() => {
         fetchData()
     }, [])
 
     return (
         <Layout>
-            <Box sx={{ padding: {xs:'2rem 0.6rem 2rem 0.6rem', md: "2rem"}, maxWidth: '1200px', margin: '0 auto' }}>
+            <Box sx={{ padding: { xs: '2rem 0.6rem 2rem 0.6rem', md: "2rem" }, maxWidth: '1200px', margin: '0 auto' }}>
                 {user ? (
                     <Grid container spacing={2} justifyContent="center">
                         <Grid item xs={12} md={8}>
-                            <Card sx={{ borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', overflow: 'visible' }}>
+                            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: "1rem" }}>
+                                <Tooltip title="Share as image">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handleShareAsImage}
+                                        sx={{
+                                            borderRadius: '50px',
+                                            minWidth: '50px',
+                                            minHeight: '50px',
+                                            width: '50px',
+                                            overflow: 'hidden',
+                                            padding: '0.5rem',
+                                            textTransform: 'none',
+                                            fontWeight: 'bold',
+                                            display: 'flex',
+                                            justifyContent: 'flex-start',
+                                            alignItems: 'center',
+                                            backgroundColor: "#457A5A",
+                                            transition: 'width 0.3s ease, background-color 0.3s ease',
+                                            '&:hover': {
+                                                width: '116px',
+                                                backgroundColor: '#366147',
+                                            },
+                                            '& .button-label': {
+                                                opacity: 0,
+                                                transition: 'opacity 0.3s ease',
+                                                marginLeft: '10px',
+                                            },
+                                            '&:hover .button-label': {
+                                                opacity: 1,
+                                            },
+                                        }}
+                                    >
+                                        <ShareIcon sx={{ marginLeft: "4px" }} />
+                                        <span
+                                            className="button-label"
+                                            style={{
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            Share
+                                        </span>
+                                    </Button>
+                                </Tooltip>
+                            </Box>
+
+                            <Card id="profile-content" sx={{ borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', overflow: 'visible', backgroundColor: 'transparent' }}>
                                 <CardHeader
                                     title={user.Username}
                                     subheader={`${user.Firstname} ${user.Lastname}`}
@@ -60,8 +139,9 @@ function Profile() {
                                             fontWeight: 'normal', // Customize subheader font weight
                                         }
                                     }}
-                                />
-                                <CardContent>
+                                >
+                                </CardHeader>
+                                <CardContent sx={{ backgroundColor: "#F5FFFC" }}>
                                     <Box sx={{ pl: "1.2rem", }}>
                                         <Typography variant="body1" gutterBottom sx={{ color: "#384137" }}>{user.Email}</Typography>
                                         <Typography variant="body2" color="textSecondary">Province: {user.Province}</Typography>

@@ -13,19 +13,28 @@ import (
 func CreateUser(c *gin.Context) {
 	var user entity.User
 
+	// Bind JSON to user
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Validate user fields
 	if _, err := govalidator.ValidateStruct(user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Check for uniqueness of Username and Email
+	if unique, errMsg := entity.IsUniqueUser(user.Username, user.Email, 0); !unique {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
+		return
+	}
+
+	// Hash password
 	password, _ := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
 
-	// สร้าง User
+	// Create user struct
 	cu := entity.User{
 		Username:       user.Username,
 		Firstname:      user.Firstname,
@@ -40,19 +49,18 @@ func CreateUser(c *gin.Context) {
 		FollowingCount: user.FollowingCount,
 	}
 
-	// บันทึก
+	// Save user to DB
 	if err := entity.DB().Create(&cu).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// อัพเดต FollowerCount
+	// Update follower and following counts
 	if err := entity.UpdateFollowerCount(entity.DB(), cu.ID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// อัพเดต FollowingCount
 	if err := entity.UpdateFollowingCount(entity.DB(), cu.ID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -107,6 +115,13 @@ func UpdateUser(c *gin.Context) {
 
 	if _, err := govalidator.ValidateStruct(user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Check if the Username already exists for another user
+	var existingUser entity.User
+	if err := entity.DB().Where("username = ? AND id != ?", user.Username, user.ID).First(&existingUser).Error; err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists. Please choose another username."})
 		return
 	}
 

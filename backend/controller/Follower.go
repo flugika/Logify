@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/flugika/Logify/entity"
 	"github.com/gin-gonic/gin"
 )
@@ -11,18 +12,31 @@ import (
 func FollowUser(c *gin.Context) {
 	var follower entity.Follower
 
+	// Bind JSON to the follower struct
 	if err := c.ShouldBindJSON(&follower); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// เพิ่มการติดตาม
-	if err := entity.DB().Create(&follower).Error; err != nil {
+	// Validate using govalidator
+	if _, err := govalidator.ValidateStruct(follower); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "validation failed: " + err.Error()})
+		return
+	}
+
+	// Custom validation (e.g., user cannot follow themselves)
+	if err := follower.Validate(); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// อัพเดตจำนวน follower และ following
+	// Create the follower record
+	if err := entity.DB().Create(&follower).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Update follower and following count
 	if err := entity.UpdateFollowerCount(entity.DB(), *follower.UserID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -32,6 +46,7 @@ func FollowUser(c *gin.Context) {
 		return
 	}
 
+	// Respond with the created follower record
 	c.JSON(http.StatusCreated, gin.H{"data": follower})
 }
 

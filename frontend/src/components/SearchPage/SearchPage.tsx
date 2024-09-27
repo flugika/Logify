@@ -1,18 +1,17 @@
 import React from 'react';
 import Style from './SearchPage.module.css';
-import SearchBar from './SearchBar/SearchBar'; // Correct import
-import { LogInterface } from "../../interfaces/ILog";
+import SearchBar from './SearchBar/SearchBar';
 
 interface SearchPageProps {
-    setLogs: (logs: LogInterface[]) => void;
     keyword: string;
     setKeyword: (keyword: string) => void;
+    searchData: () => void;
 }
 
-const SearchPage: React.FC<SearchPageProps> = ({ setLogs, keyword, setKeyword }) => {
+const SearchPage: React.FC<SearchPageProps> = ({ searchData, keyword, setKeyword }) => {
     return (
         <div className={Style.SearchPage}>
-            <SearchBar setLogs={setLogs} keyword={keyword} setKeyword={setKeyword} />
+            <SearchBar searchData={searchData} keyword={keyword} setKeyword={setKeyword}/>
         </div>
     );
 };
